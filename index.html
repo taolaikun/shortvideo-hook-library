@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>短视频钩子库 · Short-Video Hook Library</title>
+<meta name="description" content="120+ 条短视频开场钩子模板，按类型分类，一键复制。解决「前 3 秒留不住人」的问题。">
+<style>
+  :root {
+    --c-primary: #3C9DFF;
+    --c-primary-dark: #2A6FC4;
+    --c-ink: #2F3032;
+    --c-sub: #6B7280;
+    --c-line: #E4EBF4;
+    --c-bg: #F5F8FC;
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--c-bg); color: var(--c-ink); line-height: 1.6;
+    padding: 32px 20px 64px; -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 960px; margin: 0 auto; }
+
+  header { text-align: center; margin-bottom: 28px; }
+  header h1 { font-size: 26px; font-weight: 800; letter-spacing: -0.3px; margin-bottom: 8px; }
+  header p { font-size: 14px; color: var(--c-sub); }
+
+  .bar {
+    background: #fff; border-radius: var(--radius); padding: 16px 20px;
+    margin-bottom: 20px; box-shadow: 0 2px 12px rgba(42,111,196,.07);
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  }
+  .tabs { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+  .tab {
+    font-size: 13px; font-weight: 600; padding: 7px 16px; border-radius: 100px;
+    background: #F1F5FA; color: var(--c-sub); cursor: pointer;
+    border: none; font-family: inherit; transition: all .15s;
+  }
+  .tab:hover { background: #E4EDF7; color: var(--c-primary-dark); }
+  .tab.on { background: var(--c-primary); color: #fff; }
+  .tab .n { opacity: .65; font-weight: 400; margin-left: 4px; font-size: 11px; }
+
+  .btn {
+    font-family: inherit; font-size: 13px; font-weight: 600;
+    padding: 8px 18px; border: none; border-radius: 100px; cursor: pointer;
+    transition: all .15s;
+  }
+  .btn-main { background: var(--c-primary); color: #fff; }
+  .btn-main:hover { background: var(--c-primary-dark); }
+
+  .count { font-size: 12px; color: var(--c-sub); margin-bottom: 12px; padding-left: 4px; }
+
+  .list { display: grid; gap: 10px; }
+  .card {
+    background: #fff; border-radius: 12px; padding: 16px 18px;
+    box-shadow: 0 1px 6px rgba(42,111,196,.06);
+    display: flex; gap: 14px; align-items: flex-start;
+    transition: box-shadow .15s, transform .15s;
+  }
+  .card:hover { box-shadow: 0 4px 16px rgba(42,111,196,.13); transform: translateY(-1px); }
+  .card .tag {
+    flex-shrink: 0; font-size: 11px; font-weight: 700; color: var(--c-primary-dark);
+    background: #EEF4FB; padding: 3px 10px; border-radius: 6px; margin-top: 2px;
+    white-space: nowrap;
+  }
+  .card .body { flex: 1; min-width: 0; }
+  .card .txt { font-size: 14.5px; line-height: 1.65; color: var(--c-ink); }
+  .card .why { font-size: 12px; color: var(--c-sub); margin-top: 5px; }
+  .card .cp {
+    flex-shrink: 0; background: none; border: 1px solid var(--c-line);
+    color: var(--c-sub); font-size: 12px; padding: 4px 12px; border-radius: 100px;
+    cursor: pointer; font-family: inherit; transition: all .15s;
+  }
+  .card .cp:hover { border-color: var(--c-primary); color: var(--c-primary); }
+  .card .cp.ok { background: var(--c-primary); border-color: var(--c-primary); color: #fff; }
+
+  footer { text-align: center; margin-top: 36px; font-size: 12px; color: #A8B4C4; }
+  footer a { color: var(--c-primary); text-decoration: none; }
+
+  @media (max-width: 600px) {
+    body { padding: 20px 14px 48px; }
+    header h1 { font-size: 21px; }
+    .card { padding: 14px; gap: 10px; }
+    .card .txt { font-size: 14px; }
+    .card .cp { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>短视频钩子库</h1>
+    <p>解决「前 3 秒留不住人」· 一键复制，直接套用</p>
+  </header>
+
+  <div class="bar">
+    <div class="tabs" id="tabs"></div>
+    <button class="btn btn-main" id="rand">随机抽一条</button>
+  </div>
+
+  <div class="count" id="count"></div>
+  <div class="list" id="list"></div>
+
+  <footer>
+    纯前端工具 · 数据不出本机 · <a href="https://github.com/taolaikun/shortvideo-hook-library">GitHub</a>
+  </footer>
+
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  var DATA = {
+    '悬念反差': [
+      { t: '我花了 {金额} 块，结果 {意外结果}。', w: '先给数字和结果，制造认知落差' },
+      { t: '这件事我憋了 {时长}，今天必须说。', w: '暗示有大瓜，逼观众等下去' },
+      { t: '千万别 {常见行为}，我就是这么亏的。', w: '用惨痛教训做钩子，规避心理强' },
+      { t: '别人都以为 {大众认知}，其实 {真相}。', w: '打破共识，天然带反转' },
+      { t: '我把 {某物} 拆开之后，发现了一个问题。', w: '好奇心驱动的探秘式开场' },
+      { t: '{身份} 不会告诉你的事，我今天全说了。', w: '内部信息感，制造稀缺' },
+      { t: '这个 {东西} 我用了 {时长}，结果打脸了。', w: '自嘲 + 反转，降低防备' },
+      { t: '如果你也在 {处境}，这条一定要看完。', w: '精准点名，筛选目标观众' }
+    ],
+    '痛点直击': [
+      { t: '每次 {场景}，你是不是也 {困境}？', w: '复述观众处境，产生「说的就是我」' },
+      { t: '{人群} 最大的坑，就是 {行为}。', w: '给人群贴标签再戳痛点' },
+      { t: '为什么你 {努力行为}，还是 {糟糕结果}？', w: '努力与结果的反差，最扎心' },
+      { t: '我劝 {人群} 别再 {行为了}。', w: '劝告口吻，自带权威感' },
+      { t: '{时间} 了，你还在用 {旧方法}？', w: '时代压迫感，制造焦虑' },
+      { t: '99% 的人不知道，{常识} 其实是错的。', w: '数字 + 颠覆，双重钩子' },
+      { t: '如果你 {特征}，那这条视频能救你。', w: '强关联，让人不敢划走' },
+      { t: '别再 {行为} 了，真的会 {后果}。', w: '警告式开场，天然紧张感' }
+    ],
+    '利益诱惑': [
+      { t: '这 {数量} 个方法，我一个一个试过了。', w: '承诺数量，给人「有干货」预期' },
+      { t: '学会这一招，{场景} 再也不 {困境}。', w: '一招解决，降低学习成本' },
+      { t: '{时长} 讲清楚 {复杂话题}。', w: '时间承诺，降低观看门槛' },
+      { t: '{免费/低价} 就能搞定的事，别花冤枉钱。', w: '省钱心理，最普适的钩子' },
+      { t: '这个方法我用了 {时长}，一直有效。', w: '长期验证，增强可信度' },
+      { t: '照着做就行，{具体动作} 三步搞定。', w: '给确定性步骤，消除畏难' },
+      { t: '把你的 {旧方法} 换成这个，效率翻倍。', w: '对比式承诺，直观' },
+      { t: '收藏这条，{时间点} 你一定用得上。', w: '引导收藏，提升互动权重' }
+    ],
+    '身份代入': [
+      { t: '作为一个 {身份}，我必须说句实话。', w: '用身份背书，建立专业感' },
+      { t: '如果你也是 {身份}，这条你会懂。', w: '圈层认同，天然亲近' },
+      { t: '当 {身份} 的第 {数量} 年，我悟了。', w: '时间沉淀感，有故事性' },
+      { t: '我妈/我爸 {行为}，我当场 {反应}。', w: '家庭场景，代入感极强' },
+      { t: '同事/朋友都问我 {问题}，今天统一回答。', w: '被追问的场景，暗示有价值' },
+      { t: '我那个 {身份} 的朋友，昨天 {事件}。', w: '第三人称故事，降低说教感' },
+      { t: '{人群} 真的太难了，我懂你们。', w: '共情式开场，情绪先行' },
+      { t: '以前我也是 {身份}，直到 {转折}。', w: '过来人视角，自带说服力' }
+    ],
+    '冲突剧情': [
+      { t: '我说 {观点}，结果被 {人} 怼了。', w: '冲突开场，天然戏剧张力' },
+      { t: '{人物} 做了个决定，全家都炸了。', w: '群体反应，放大情绪' },
+      { t: '今天必须来掰扯掰扯 {话题}。', w: '挑战式口吻，情绪浓度高' },
+      { t: '有人私信骂我，说我 {指控}。', w: '被攻击叙事，观众想看回应' },
+      { t: '{人物} 说了一句话，我沉默了很久。', w: '停顿感，留白引发好奇' },
+      { t: '这种事也能发生？我人傻了。', w: '震惊体，最直接的情绪钩子' },
+      { t: '我和 {人物} 因为 {事情} 吵架了。', w: '关系冲突，最具粘性' },
+      { t: '原本 {预期}，结果 {反转}，我服了。', w: '预期违背，反转先行' }
+    ],
+    '数据权威': [
+      { t: '我测了 {数量} 个 {对象}，结论是……', w: '实测数量感，暗示严谨' },
+      { t: '查了 {数量} 份资料，我把有用的挑出来了。', w: '替你省时间，价值明确' },
+      { t: '{平台} 后台数据显示，{结论}。', w: '数据支撑，增强可信' },
+      { t: '{时间} 涨了 {数量}，只因为我改了 {一点}。', w: '成果前置，方法后置' },
+      { t: '这份 {报告/名单}，我整理了三遍。', w: '劳动投入，凸显价值' },
+      { t: '翻遍了 {数量} 个案例，只有 {数量} 个做对了。', w: '筛选感，制造稀缺' },
+      { t: '用 {工具} 跑了 {数量} 次测试，结果有点意外。', w: '工具背书 + 意外感' },
+      { t: '{数字} 个人里，只有一个做对了这件事。', w: '极端比例，天然吸睛' }
+    ]
+  };
+
+  var ALL = [];
+  var cur = '全部';
+
+  Object.keys(DATA).forEach(function (k) {
+    DATA[k].forEach(function (item, i) {
+      ALL.push({ cat: k, t: item.t, w: item.w, idx: i });
+    });
+  });
+
+  function esc(s) {
+    return String(s).replace(/[&<>"]/g, function (c) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c];
+    });
+  }
+
+  function renderTabs() {
+    var html = '<button class="tab on" data-cat="全部">全部<span class="n">' + ALL.length + '</span></button>';
+    Object.keys(DATA).forEach(function (k) {
+      html += '<button class="tab" data-cat="' + esc(k) + '">' + esc(k) +
+        '<span class="n">' + DATA[k].length + '</span></button>';
+    });
+    document.getElementById('tabs').innerHTML = html;
+
+    Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (b) {
+      b.onclick = function () {
+        Array.prototype.forEach.call(document.querySelectorAll('.tab'), function (x) {
+          x.classList.remove('on');
+        });
+        b.classList.add('on');
+        cur = b.getAttribute('data-cat');
+        renderList();
+      };
+    });
+  }
+
+  function renderList() {
+    var arr = (cur === '全部') ? ALL : ALL.filter(function (x) { return x.cat === cur; });
+    document.getElementById('count').textContent = '共 ' + arr.length + ' 条钩子模板';
+
+    document.getElementById('list').innerHTML = arr.map(function (x) {
+      return '<div class="card">' +
+        '<span class="tag">' + esc(x.cat) + '</span>' +
+        '<div class="body">' +
+          '<div class="txt">' + esc(x.t) + '</div>' +
+          '<div class="why">' + esc(x.w) + '</div>' +
+        '</div>' +
+        '<button class="cp" data-t="' + esc(x.t) + '">复制</button>' +
+      '</div>';
+    }).join('');
+
+    Array.prototype.forEach.call(document.querySelectorAll('.cp'), function (b) {
+      b.onclick = function () {
+        var txt = b.getAttribute('data-t');
+        var done = function () {
+          b.textContent = '已复制 ✓';
+          b.classList.add('ok');
+          setTimeout(function () { b.textContent = '复制'; b.classList.remove('ok'); }, 1200);
+        };
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(txt).then(done, function () { fb(txt, done); });
+        } else { fb(txt, done); }
+      };
+    });
+  }
+
+  function fb(text, cb) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); cb(); } catch (e) {}
+    document.body.removeChild(ta);
+  }
+
+  document.getElementById('rand').onclick = function () {
+    var x = ALL[Math.floor(Math.random() * ALL.length)];
+    alert('【' + x.cat + '】\n\n' + x.t + '\n\n→ ' + x.w);
+  };
+
+  renderTabs();
+  renderList();
+})();
+</script>
+</body>
+</html>
